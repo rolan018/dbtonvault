@@ -16,6 +16,9 @@ services:
       - ./pg_data:/var/lib/postgresql/data
     security_opt:
       - no-new-privileges:true
+    networks:
+      dbt_database:
+        ipv4_address: "172.18.0.2"
 
   dbt:
     build:
@@ -28,3 +31,15 @@ services:
       - DBT_HOST=${DBT_HOST}
       - DBT_USER=${DBT_USER}
       - DBT_PASSWORD=${DBT_PASSWORD}
+    networks:
+      dbt_database:
+        ipv4_address: "172.18.0.3"
+
+networks:
+  dbt_database:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: "172.18.0.0/16"
+         gateway: "172.18.0.1"
+  

@@ -5,3 +5,5 @@
 /dbt/dwhvault/dbt_packages/dbt_utils
 /dbt/profiles.yml
 /dbt/dwhvault/dbt_packages/automate-dv/*
+profiles.yml
+.user.yml
