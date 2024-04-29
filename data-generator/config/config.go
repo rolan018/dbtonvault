@@ -3,7 +3,6 @@ package config
 import (
 	"flag"
 	"os"
-	"reflect"
 	"strconv"
 
 	"github.com/ilyakaznacheev/cleanenv"
@@ -17,14 +16,10 @@ type Config struct {
 	Db       string `yaml:"db" env-required:"true"`
 }
 
-func (c Config) IsEmpty() bool {
-	return reflect.DeepEqual(c, Config{})
-}
-
 func EnvLoad() *Config {
 	cfg := loadArgs()
-	if !cfg.IsEmpty() {
-		return &cfg
+	if cfg != nil {
+		return cfg
 	}
 	path := loadConfigPath()
 
@@ -32,17 +27,17 @@ func EnvLoad() *Config {
 		panic("config file doesn't exist: " + path)
 	}
 
-	if err := cleanenv.ReadConfig(path, &cfg); err != nil {
+	if err := cleanenv.ReadConfig(path, cfg); err != nil {
 		panic("Failed to read config: " + err.Error())
 	}
-	return &cfg
+	return cfg
 }
 
 // load arguments from command line
-func loadArgs() Config {
+func loadArgs() *Config {
 	arguments := os.Args
 	if len(arguments) == 1 {
-		return Config{}
+		return nil
 	}
 	if len(arguments) != 6 {
 		panic("please provide: hostname port username password db")
@@ -56,7 +51,7 @@ func loadArgs() Config {
 	pass := arguments[4]
 	database := arguments[5]
 
-	return Config{Host: host, Port: port, User: user, Password: pass, Db: database}
+	return &Config{Host: host, Port: port, User: user, Password: pass, Db: database}
 }
 
 // Load config from path
