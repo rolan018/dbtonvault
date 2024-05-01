@@ -11,7 +11,6 @@ import (
 func main() {
 	// get cred. from arguments or load from config file
 	cfg := config.EnvLoad()
-
 	// connection string
 	conn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.Db)
