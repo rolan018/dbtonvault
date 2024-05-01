@@ -1,0 +1,7 @@
+DROP SCHEMA IF EXISTS stage;
+
+DROP TABLE IF EXISTS stage.user;
+
+DROP TABLE IF EXISTS stage.product;
+
+DROP TABLE IF EXISTS stage.order;
