@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"flag"
 	"os"
 	"strconv"
@@ -16,9 +17,10 @@ type Config struct {
 	Db       string `yaml:"db" env-required:"true"`
 }
 
-func EnvLoad() *Config {
-	cfg := loadArgs()
-	if cfg != nil {
+func EnvLoad() Config {
+
+	cfg, err := loadArgs()
+	if err == nil {
 		return cfg
 	}
 	path := loadConfigPath()
@@ -27,17 +29,17 @@ func EnvLoad() *Config {
 		panic("config file doesn't exist: " + path)
 	}
 
-	if err := cleanenv.ReadConfig(path, cfg); err != nil {
+	if err := cleanenv.ReadConfig(path, &cfg); err != nil {
 		panic("Failed to read config: " + err.Error())
 	}
 	return cfg
 }
 
 // load arguments from command line
-func loadArgs() *Config {
+func loadArgs() (Config, error) {
 	arguments := os.Args
 	if len(arguments) == 1 {
-		return nil
+		return Config{}, errors.New("no arguments were provided")
 	}
 	if len(arguments) != 6 {
 		panic("please provide: hostname port username password db")
@@ -51,7 +53,7 @@ func loadArgs() *Config {
 	pass := arguments[4]
 	database := arguments[5]
 
-	return &Config{Host: host, Port: port, User: user, Password: pass, Db: database}
+	return Config{Host: host, Port: port, User: user, Password: pass, Db: database}, nil
 }
 
 // Load config from path
@@ -67,7 +69,7 @@ func loadConfigPath() string {
 		res = os.Getenv("CONFIG_PATH")
 	}
 	if res == "" {
-		res = "config.yaml"
+		res = "config/config.yaml"
 	}
 
 	return res
