@@ -5,19 +5,21 @@ import (
 	"data-generator/config"
 	"database/sql"
 	"embed"
+	"flag"
 	"fmt"
 )
 
 const (
 	migrationsDir = "migrations"
-	// mode must be up or down
-	mode = "up"
 )
 
 //go:embed migrations/*.sql
 var MigrationsFS embed.FS
 
 func main() {
+	// load mode parameter
+	mode := loadMigrationMode()
+	// load config
 	cfg := config.EnvLoad()
 
 	// Create Migrator
@@ -38,16 +40,23 @@ func main() {
 	defer conn.Close()
 
 	// Apply migrations
-	if mode == "up" {
-		err = migrator.UpMigrations(conn)
-	} else if mode == "down" {
-		err = migrator.DownMigrations(conn)
-	} else {
-		panic("mode parameter must be up or down")
-	}
+	err = migrator.ApplyMigrations(conn, mode)
 	if err != nil {
 		panic(err)
 	}
 
 	fmt.Printf("Migrations applied!!")
+}
+
+// loadMigrationMode load mode from parameter
+func loadMigrationMode() string {
+	var mode string
+	flag.StringVar(&mode, "mode", "", "migration mode: up or down")
+	flag.Parse()
+	if mode == "" {
+		panic("you need to define the application launch parameters: up or down")
+	} else if mode != "up" && mode != "down" {
+		panic("mode parameter must be up or down")
+	}
+	return mode
 }

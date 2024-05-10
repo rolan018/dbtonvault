@@ -31,7 +31,7 @@ func NewMigrator(sqlFiles embed.FS, dirName string) *Migrator {
 }
 
 // ApplyMigrations применяет миграции к базе данных.
-func (m *Migrator) UpMigrations(db *sql.DB) error {
+func (m *Migrator) ApplyMigrations(db *sql.DB, mode string) error {
 	// Создаем экземпляр драйвера базы данных для PostgreSQL.
 	driver, err := postgres.WithInstance(db, &postgres.Config{})
 	if err != nil {
@@ -48,32 +48,14 @@ func (m *Migrator) UpMigrations(db *sql.DB) error {
 	defer migrator.Close()
 
 	// Применяем миграции.
-	if err = migrator.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
-		return fmt.Errorf("unable to apply migrations %v", err)
+	if mode == "up" {
+		err = migrator.Up()
+	} else if mode == "down" {
+		err = migrator.Down()
+	} else {
+		return fmt.Errorf("mode must be: up or down")
 	}
-
-	return nil
-}
-
-// ApplyMigrations применяет миграции к базе данных.
-func (m *Migrator) DownMigrations(db *sql.DB) error {
-	// Создаем экземпляр драйвера базы данных для PostgreSQL.
-	driver, err := postgres.WithInstance(db, &postgres.Config{})
-	if err != nil {
-		return fmt.Errorf("unable to create db instance: %v", err)
-	}
-
-	// Создаем новый экземпляр мигратора с использованием драйвера источника и драйвера базы данных PostgreSQL.
-	migrator, err := migrate.NewWithInstance("migration_embeded_sql_files", m.srcDriver, "psql_db", driver)
-	if err != nil {
-		return fmt.Errorf("unable to create migration: %v", err)
-	}
-
-	// Закрываем мигратор в конце работы функции.
-	defer migrator.Close()
-
-	// Применяем миграции.
-	if err = migrator.Down(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
+	if err != nil && !errors.Is(err, migrate.ErrNoChange) {
 		return fmt.Errorf("unable to apply migrations %v", err)
 	}
 
