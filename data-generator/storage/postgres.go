@@ -5,6 +5,7 @@ import (
 	"data-generator/models"
 	"database/sql"
 	"fmt"
+	"runtime"
 
 	_ "github.com/lib/pq"
 )
@@ -22,6 +23,7 @@ func New(cfg config.Config) (*Storage, error) {
 	if err != nil {
 		return nil, err
 	}
+	db.SetMaxOpenConns(runtime.GOMAXPROCS(0))
 	return &Storage{db: db}, nil
 }
 

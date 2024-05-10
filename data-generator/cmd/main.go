@@ -2,41 +2,61 @@ package main
 
 import (
 	"data-generator/config"
-	"database/sql"
+	"data-generator/generator"
+	"data-generator/storage"
+	"sync"
+
 	"fmt"
 
 	_ "github.com/lib/pq"
 )
 
+var (
+	dateLoad = "10-01-2024"
+	wg       sync.WaitGroup
+	numRows  = 10_000
+)
+
 func main() {
 	// get cred. from arguments or load from config file
 	cfg := config.EnvLoad()
-	// connection string
-	conn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.Db)
-	// connect to db
-	db, err := sql.Open("postgres", conn)
+	// connection to db
+	postgres, err := storage.New(cfg)
 	if err != nil {
-		fmt.Println("Open():", err)
+		fmt.Println("Error with:", err)
 		return
 	}
-	defer db.Close()
+	// Start goroutines
+	wg.Add(numRows)
+	for i := 0; i < numRows; i++ {
+		userNum := i
+		go loadToStorage(postgres, userNum)
+	}
+	// wait all goroutines
+	wg.Wait()
+}
 
-	// get all db's
-	rows, err := db.Query(`SELECT datname FROM pg_database WHERE datistemplate = false`)
+func loadToStorage(postgres *storage.Storage, num int) {
+	defer wg.Done()
+	// generate data
+	user := generator.GenerateUser(num, dateLoad)
+	product := generator.GenerateProduct(num, dateLoad)
+	order := generator.GenerateOrder(num, dateLoad, user, product)
+	// load data
+	err := postgres.SaveOrder(order)
 	if err != nil {
-		fmt.Println("Query", err)
+		fmt.Println("Error in loadToStorage with:", err)
 		return
 	}
-	for rows.Next() {
-		var name string
-		err = rows.Scan(&name)
-		if err != nil {
-			fmt.Println("Scan", err)
-			return
-		}
-		fmt.Println("DATABASE:", name)
+	err = postgres.SaveProduct(product)
+	if err != nil {
+		fmt.Println("Error in loadToStorage with:", err)
+		return
 	}
-	defer rows.Close()
-	// query := `SELECT table_name FROM information_schema.tables WHERE table_schema = ORDER BY table_name`
+	err = postgres.SaveUser(user)
+	if err != nil {
+		fmt.Println("Error in loadToStorage with:", err)
+		return
+	}
+	fmt.Println("Finish load data with iteration:", num)
 }
