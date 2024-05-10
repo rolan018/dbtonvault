@@ -8,7 +8,11 @@ import (
 	"fmt"
 )
 
-const migrationsDir = "migrations"
+const (
+	migrationsDir = "migrations"
+	// mode must be up or down
+	mode = "up"
+)
 
 //go:embed migrations/*.sql
 var MigrationsFS embed.FS
@@ -16,7 +20,7 @@ var MigrationsFS embed.FS
 func main() {
 	cfg := config.EnvLoad()
 
-	// Recover Migrator
+	// Create Migrator
 	migrator := migrator.NewMigrator(MigrationsFS, migrationsDir)
 
 	// Get the DB instance
@@ -34,7 +38,13 @@ func main() {
 	defer conn.Close()
 
 	// Apply migrations
-	err = migrator.ApplyMigrations(conn)
+	if mode == "up" {
+		err = migrator.UpMigrations(conn)
+	} else if mode == "down" {
+		err = migrator.DownMigrations(conn)
+	} else {
+		panic("mode parameter must be up or down")
+	}
 	if err != nil {
 		panic(err)
 	}

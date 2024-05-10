@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS stage.user
     user_number INTEGER PRIMARY KEY,
     user_name VARCHAR(255) NOT NULL,
     user_email VARCHAR(100),
-    user_phone_number INTEGER,
+    user_phone_number BIGINT,
     date_login DATE,
 	date_load DATE
 );
