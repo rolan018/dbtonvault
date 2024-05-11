@@ -42,21 +42,9 @@ func loadToStorage(postgres *storage.Storage, num int) {
 	user := generator.GenerateUser(num, dateLoad)
 	product := generator.GenerateProduct(num, dateLoad)
 	order := generator.GenerateOrder(num, dateLoad, user, product)
-	// load data
-	err := postgres.SaveOrder(order)
+	err := postgres.SaveData(user, product, order, num)
 	if err != nil {
-		fmt.Println("Error in loadToStorage with:", err)
+		fmt.Println(err.Error())
 		return
 	}
-	err = postgres.SaveProduct(product)
-	if err != nil {
-		fmt.Println("Error in loadToStorage with:", err)
-		return
-	}
-	err = postgres.SaveUser(user)
-	if err != nil {
-		fmt.Println("Error in loadToStorage with:", err)
-		return
-	}
-	fmt.Println("Finish load data with iteration:", num)
 }

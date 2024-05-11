@@ -27,7 +27,7 @@ func New(cfg config.Config) (*Storage, error) {
 	return &Storage{db: db}, nil
 }
 
-func (s *Storage) SaveUser(user models.User) error {
+func (s *Storage) saveUser(user models.User) error {
 	insertStatment := `INSERT INTO stage.user(
 		user_number, 
 		user_name,
@@ -47,7 +47,7 @@ func (s *Storage) SaveUser(user models.User) error {
 	return err
 }
 
-func (s *Storage) SaveOrder(order models.Order) error {
+func (s *Storage) saveOrder(order models.Order) error {
 	insertStatment := `INSERT INTO stage.order(
 		order_number,
 		product_number,
@@ -67,7 +67,7 @@ func (s *Storage) SaveOrder(order models.Order) error {
 	return err
 }
 
-func (s *Storage) SaveProduct(product models.Product) error {
+func (s *Storage) saveProduct(product models.Product) error {
 	insertStatment := `INSERT INTO stage.product(
 		product_number, 
 		product_name,
@@ -85,4 +85,22 @@ func (s *Storage) SaveProduct(product models.Product) error {
 		product.Date_product,
 		product.Date_load)
 	return err
+}
+
+func (s *Storage) SaveData(user models.User, product models.Product, order models.Order, num int) error {
+	// load data
+	err := s.saveUser(user)
+	if err != nil {
+		return fmt.Errorf("error in loadToStorage with:%s", err.Error())
+	}
+	err = s.saveProduct(product)
+	if err != nil {
+		return fmt.Errorf("error in loadToStorage with:%s", err.Error())
+	}
+	err = s.saveOrder(order)
+	if err != nil {
+		return fmt.Errorf("error in loadToStorage with:%s", err.Error())
+	}
+	fmt.Println("Finish load data with iteration:", num)
+	return nil
 }
