@@ -10,3 +10,17 @@ dbt init dwhvault
 ```
 dbt deps 
 ```
+
+## Data generator (golang project)
+Make migrations (Up)
+```
+go run .\cmd\migrator\main.go --mode="up"
+```
+Make migrations (Down)
+```
+go run .\cmd\migrator\main.go --mode="down"
+```
+Run generator with N rows
+```
+go run .\cmd\main.go --numRows="N"
+```

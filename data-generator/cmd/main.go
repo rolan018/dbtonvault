@@ -4,6 +4,7 @@ import (
 	"data-generator/config"
 	"data-generator/generator"
 	"data-generator/storage"
+	"data-generator/utils"
 	"sync"
 
 	"fmt"
@@ -14,10 +15,11 @@ import (
 var (
 	dateLoad = "10-01-2024"
 	wg       sync.WaitGroup
-	numRows  = 10_000
 )
 
 func main() {
+	// load num rows from params
+	numRows := utils.LoadNumRows()
 	// get cred. from arguments or load from config file
 	cfg := config.EnvLoad()
 	// connection to db

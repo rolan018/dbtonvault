@@ -3,9 +3,9 @@ package main
 import (
 	migrator "data-generator/cmd/migrator/psqlmigrator"
 	"data-generator/config"
+	"data-generator/utils"
 	"database/sql"
 	"embed"
-	"flag"
 	"fmt"
 )
 
@@ -18,7 +18,7 @@ var MigrationsFS embed.FS
 
 func main() {
 	// load mode parameter
-	mode := loadMigrationMode()
+	mode := utils.LoadMigrationMode()
 	// load config
 	cfg := config.EnvLoad()
 
@@ -46,17 +46,4 @@ func main() {
 	}
 
 	fmt.Printf("Migrations applied!!")
-}
-
-// loadMigrationMode load mode from parameter
-func loadMigrationMode() string {
-	var mode string
-	flag.StringVar(&mode, "mode", "", "migration mode: up or down")
-	flag.Parse()
-	if mode == "" {
-		panic("you need to define the application launch parameters: up or down")
-	} else if mode != "up" && mode != "down" {
-		panic("mode parameter must be up or down")
-	}
-	return mode
 }
