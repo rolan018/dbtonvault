@@ -3,6 +3,7 @@ package config
 import (
 	"errors"
 	"flag"
+	"fmt"
 	"os"
 	"strconv"
 
@@ -23,37 +24,45 @@ func EnvLoad() Config {
 	if err == nil {
 		return cfg
 	}
-	path := loadConfigPath()
-
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		panic("config file doesn't exist: " + path)
+	cfg, err = loadConfig()
+	if err == nil {
+		return cfg
 	}
-
-	if err := cleanenv.ReadConfig(path, &cfg); err != nil {
-		panic("Failed to read config: " + err.Error())
-	}
-	return cfg
+	fmt.Println(err)
+	panic("provide config path option or CONFIG_PATH env. or hostname port username password db")
 }
 
 // load arguments from command line
 func loadArgs() (Config, error) {
 	arguments := os.Args
-	if len(arguments) == 1 {
-		return Config{}, errors.New("no arguments were provided")
-	}
-	if len(arguments) != 6 {
-		panic("please provide: hostname port username password db")
+	if len(arguments) < 6 {
+		return Config{}, errors.New("provide: hostname port username password db")
 	}
 	host := arguments[1]
 	port, err := strconv.Atoi(arguments[2])
 	if err != nil {
-		panic("lease provide valid port")
+		return Config{}, errors.New("provide valid port")
 	}
 	user := arguments[3]
 	pass := arguments[4]
 	database := arguments[5]
 
 	return Config{Host: host, Port: port, User: user, Password: pass, Db: database}, nil
+}
+
+func loadConfig() (Config, error) {
+	var cfg Config
+
+	path := loadConfigPath()
+
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return Config{}, errors.New("config file doesn't exist: " + path)
+	}
+
+	if err := cleanenv.ReadConfig(path, &cfg); err != nil {
+		return Config{}, errors.New("Failed to read config: " + err.Error())
+	}
+	return cfg, nil
 }
 
 // Load config from path
@@ -69,7 +78,7 @@ func loadConfigPath() string {
 		res = os.Getenv("CONFIG_PATH")
 	}
 	if res == "" {
-		res = "config/config.yaml"
+		res = "../data-generator/config/config.yaml"
 	}
 
 	return res
