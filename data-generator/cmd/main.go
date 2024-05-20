@@ -31,8 +31,7 @@ func main() {
 	// Start goroutines
 	wg.Add(numRows)
 	for i := 0; i < numRows; i++ {
-		userNum := i
-		go loadToStorage(postgres, userNum)
+		go loadToStorage(postgres, i)
 	}
 	// wait all goroutines
 	wg.Wait()
