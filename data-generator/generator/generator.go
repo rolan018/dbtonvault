@@ -3,6 +3,7 @@ package generator
 import (
 	"data-generator/models"
 	"fmt"
+	"math/rand"
 	"time"
 
 	"github.com/jaswdr/faker"
@@ -17,14 +18,12 @@ const (
 )
 
 func GenerateUser(userNumber int, dateLoadString string) models.User {
-	fake := faker.New()
+	source := rand.NewSource(rand.Int63())
+	fake := faker.NewWithSeed(source)
 
 	phoneNumber := fake.IntBetween(min, max)
 
-	dayOfMonth := fake.Time().DayOfMonth()
-	month := fake.IntBetween(1, 12)
-	date := fmt.Sprintf("%d-%d-%d", dayOfMonth, month, yearLogin)
-
+	date := getDate(fake)
 	dateLogin, _ := time.Parse(timeLayout, date)
 	dateLoad, _ := time.Parse(timeLayout, dateLoadString)
 
@@ -37,15 +36,14 @@ func GenerateUser(userNumber int, dateLoadString string) models.User {
 }
 
 func GenerateProduct(productNumber int, dateLoadString string) models.Product {
-	fake := faker.New()
+	source := rand.NewSource(rand.Int63())
+	fake := faker.NewWithSeed(source)
 
 	description := fmt.Sprintf("Fuel Type:%s, Transmission:%s",
 		fake.Car().FuelType(),
 		fake.Car().TransmissionGear())
-	dayOfMonth := fake.Time().DayOfMonth()
-	month := fake.Time().Month()
-	date := fmt.Sprintf("%d-%d-%d", dayOfMonth, month, yearProduct)
 
+	date := getDate(fake)
 	dateProduct, _ := time.Parse(timeLayout, date)
 	dateLoad, _ := time.Parse(timeLayout, dateLoadString)
 
@@ -58,14 +56,12 @@ func GenerateProduct(productNumber int, dateLoadString string) models.Product {
 }
 
 func GenerateOrder(orderNumber int, dateLoadString string, user models.User, product models.Product) models.Order {
-	fake := faker.New()
+	source := rand.NewSource(rand.Int63())
+	fake := faker.NewWithSeed(source)
 
 	description := fake.Address().State()
-	dayOfMonth := fake.Time().DayOfMonth()
-	month := fake.Time().Month()
 
-	date := fmt.Sprintf("%d-%d-%d", dayOfMonth, month, yearProduct)
-
+	date := getDate(fake)
 	dateOrder, _ := time.Parse(timeLayout, date)
 	dateLoad, _ := time.Parse(timeLayout, dateLoadString)
 
@@ -75,4 +71,17 @@ func GenerateOrder(orderNumber int, dateLoadString string, user models.User, pro
 		Order_description: description,
 		Date_order:        dateOrder,
 		Date_load:         dateLoad}
+}
+
+func getDate(fake faker.Faker) string {
+	dayOfMonth := fmt.Sprintf("%d", fake.Int16Between(1, 28))
+	if len(dayOfMonth) != 2 {
+		dayOfMonth = fmt.Sprintf("0%s", dayOfMonth)
+	}
+	month := fmt.Sprintf("%d", fake.Int16Between(1, 12))
+	if len(month) != 2 {
+		month = fmt.Sprintf("0%s", month)
+	}
+	date := fmt.Sprintf("%s-%s-%d", dayOfMonth, month, yearProduct)
+	return date
 }

@@ -2,7 +2,7 @@ CREATE SCHEMA IF NOT EXISTS stage;
 
 CREATE TABLE IF NOT EXISTS stage.user 
 (
-    user_number INTEGER PRIMARY KEY,
+    user_number INTEGER,
     user_name VARCHAR(255) NOT NULL,
     user_email VARCHAR(100),
     user_phone_number BIGINT,
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS stage.user
 
 CREATE TABLE IF NOT EXISTS stage.product 
 (
-    product_number INTEGER PRIMARY KEY,
+    product_number INTEGER,
 	product_name VARCHAR(255) NOT NULL,
 	product_description TEXT,
 	product_category VARCHAR(100),
