@@ -38,17 +38,14 @@ func GenerateProduct(productNumber int, dateLoadString string) models.Product {
 	source := rand.NewSource(rand.Int63())
 	fake := faker.NewWithSeed(source)
 
-	fuelType := fake.Car().FuelType()
-	gearType := fake.Car().TransmissionGear()
-
 	date := getDate(fake)
 	dateProduct, _ := time.Parse(timeLayout, date)
 	dateLoad, _ := time.Parse(timeLayout, dateLoadString)
 
 	return models.Product{Product_number: productNumber,
 		Product_name:     fake.Car().Maker(),
-		Fuel_type:        fuelType,
-		Gear_type:        gearType,
+		Fuel_type:        fake.Car().FuelType(),
+		Gear_type:        fake.Car().TransmissionGear(),
 		Product_category: fake.Car().Category(),
 		Date_product:     dateProduct,
 		Date_load:        dateLoad}

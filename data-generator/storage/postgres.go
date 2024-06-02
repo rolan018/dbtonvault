@@ -76,7 +76,7 @@ func (s *Storage) saveProduct(product models.Product) error {
 		product_category,
 		date_product,
 		date_load) 
-	VALUES ($1, $2, $3, $4, $5, $6)`
+	VALUES ($1, $2, $3, $4, $5, $6, $7)`
 
 	_, err := s.db.Exec(insertStatment,
 		product.Product_number,
@@ -93,15 +93,15 @@ func (s *Storage) SaveData(user models.User, product models.Product, order model
 	// load data
 	err := s.saveUser(user)
 	if err != nil {
-		return fmt.Errorf("error in loadToStorage with:%s", err.Error())
+		return fmt.Errorf("error in loadToStorage with User:%s", err.Error())
 	}
 	err = s.saveProduct(product)
 	if err != nil {
-		return fmt.Errorf("error in loadToStorage with:%s", err.Error())
+		return fmt.Errorf("error in loadToStorage with Product:%s", err.Error())
 	}
 	err = s.saveOrder(order)
 	if err != nil {
-		return fmt.Errorf("error in loadToStorage with:%s", err.Error())
+		return fmt.Errorf("error in loadToStorage with Order:%s", err.Error())
 	}
 	fmt.Println("Finish load data with iteration:", num)
 	return nil
