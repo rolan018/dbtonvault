@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS stage.product
 (
     product_number INTEGER,
 	product_name VARCHAR(255) NOT NULL,
-	product_description TEXT,
+	fuel_type  VARCHAR(100),
+	gear_type  VARCHAR(100),
 	product_category VARCHAR(100),
 	date_product DATE,
 	date_load DATE

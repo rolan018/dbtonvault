@@ -26,7 +26,6 @@ func GenerateUser(userNumber int, dateLoadString string) models.User {
 	date := getDate(fake)
 	dateLogin, _ := time.Parse(timeLayout, date)
 	dateLoad, _ := time.Parse(timeLayout, dateLoadString)
-
 	return models.User{User_number: userNumber,
 		User_name:         fake.Person().FirstName(),
 		User_email:        fake.Internet().Email(),
@@ -39,20 +38,20 @@ func GenerateProduct(productNumber int, dateLoadString string) models.Product {
 	source := rand.NewSource(rand.Int63())
 	fake := faker.NewWithSeed(source)
 
-	description := fmt.Sprintf("Fuel Type:%s, Transmission:%s",
-		fake.Car().FuelType(),
-		fake.Car().TransmissionGear())
+	fuelType := fake.Car().FuelType()
+	gearType := fake.Car().TransmissionGear()
 
 	date := getDate(fake)
 	dateProduct, _ := time.Parse(timeLayout, date)
 	dateLoad, _ := time.Parse(timeLayout, dateLoadString)
 
 	return models.Product{Product_number: productNumber,
-		Product_name:        fake.Car().Maker(),
-		Product_description: description,
-		Product_category:    fake.Car().Category(),
-		Date_product:        dateProduct,
-		Date_load:           dateLoad}
+		Product_name:     fake.Car().Maker(),
+		Fuel_type:        fuelType,
+		Gear_type:        gearType,
+		Product_category: fake.Car().Category(),
+		Date_product:     dateProduct,
+		Date_load:        dateLoad}
 }
 
 func GenerateOrder(orderNumber int, dateLoadString string, user models.User, product models.Product) models.Order {
@@ -75,13 +74,13 @@ func GenerateOrder(orderNumber int, dateLoadString string, user models.User, pro
 
 func getDate(fake faker.Faker) string {
 	dayOfMonth := fmt.Sprintf("%d", fake.Int16Between(1, 28))
-	if len(dayOfMonth) != 2 {
+	if len(dayOfMonth) == 1 {
 		dayOfMonth = fmt.Sprintf("0%s", dayOfMonth)
 	}
 	month := fmt.Sprintf("%d", fake.Int16Between(1, 12))
-	if len(month) != 2 {
+	if len(month) == 1 {
 		month = fmt.Sprintf("0%s", month)
 	}
-	date := fmt.Sprintf("%s-%s-%d", dayOfMonth, month, yearProduct)
+	date := fmt.Sprintf("%s-%s-%d", month, dayOfMonth, yearProduct)
 	return date
 }

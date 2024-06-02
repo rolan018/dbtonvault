@@ -71,7 +71,8 @@ func (s *Storage) saveProduct(product models.Product) error {
 	insertStatment := `INSERT INTO stage.product(
 		product_number, 
 		product_name,
-		product_description,
+		fuel_type,
+		gear_type,
 		product_category,
 		date_product,
 		date_load) 
@@ -80,7 +81,8 @@ func (s *Storage) saveProduct(product models.Product) error {
 	_, err := s.db.Exec(insertStatment,
 		product.Product_number,
 		product.Product_name,
-		product.Product_description,
+		product.Fuel_type,
+		product.Gear_type,
 		product.Product_category,
 		product.Date_product,
 		product.Date_load)
