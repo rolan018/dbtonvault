@@ -26,3 +26,12 @@ go run .\cmd\main.go --numRows="N"
 ```
 
 ## Changed automate_dv files
+
+
+## DBT
+Run dbt models with vars
+```
+dbt run --vars '{"key": "value", "date": 20180101}'
+dbt run --vars '{key: value, date: 20180101}'
+dbt run --vars 'key: value'
+```
