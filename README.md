@@ -35,3 +35,8 @@ dbt run --vars '{"key": "value", "date": 20180101}'
 dbt run --vars '{key: value, date: 20180101}'
 dbt run --vars 'key: value'
 ```
+
+# Finish work
+```
+docker-compose --env-file .all-env down 
+```
