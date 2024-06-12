@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: source
+    database: dbt_db  
+    schema: stage  
+    tables:
+      - name: user
+      - name: product
+      - name: order
