@@ -26,8 +26,7 @@ clean-targets:         # directories to be removed by `dbt clean`
 
 # VARS
 vars:
-  source_date:
-    order_date: '2024-10-01'
+  source_date: '2024-10-01'
 
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models

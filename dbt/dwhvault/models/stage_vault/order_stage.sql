@@ -18,7 +18,7 @@ with order_date_dedup as (
 				   row_number() 
 				   over (partition by {{ column_names|map(attribute="name")|join(",") }}) as rn
 			from {{ source('source', 'order') }} pa
-			where date_load = '{{ var('source_date')['order_date'] }}'
+			where date_load = '{{ var('source_date') }}'
 		) as h
 		where rn = 1
 	)
