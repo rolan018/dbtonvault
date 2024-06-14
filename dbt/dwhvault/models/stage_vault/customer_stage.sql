@@ -5,9 +5,8 @@
 
 {{
     config(
-        schema='stage_vault',
         materialized='table'
-    )
+    )	
 }}
 
 {%- set column_names = adapter.get_columns_in_relation(source('source', 'user')) -%}

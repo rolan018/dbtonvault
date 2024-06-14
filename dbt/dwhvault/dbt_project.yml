@@ -36,3 +36,5 @@ vars:
 # using the `{{ config(...) }}` macro.
 models:
   dwhvault:
+    stage_vault:
+      +schema: 'stage_vault'

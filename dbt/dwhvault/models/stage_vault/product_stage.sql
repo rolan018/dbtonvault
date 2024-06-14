@@ -5,7 +5,6 @@
 
 {{
     config(
-        schema='stage_vault',
         materialized='table'
     )
 }}
