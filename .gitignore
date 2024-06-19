@@ -2,9 +2,8 @@
 /pg_data
 /dbt/logs
 /dbt/dwhvault/logs
-/dbt/dwhvault/dbt_packages/dbt_utils
+/dbt/dwhvault/dbt_packages
 /dbt/profiles.yml
-/dbt/dwhvault/dbt_packages/automate-dv
 /dbt-site-packages
 profiles.yml
 .user.yml
