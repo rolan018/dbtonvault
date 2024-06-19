@@ -25,6 +25,7 @@ services:
       dockerfile: ./image/Dockerfile
     volumes:
      - ./dbt:/usr/app
+     - ./dbt-site-packages:/usr/local/lib/python3.9/site-packages/dbt
     ports:
       - 8080:8080
     environment:

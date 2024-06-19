@@ -4,7 +4,8 @@
 /dbt/dwhvault/logs
 /dbt/dwhvault/dbt_packages/dbt_utils
 /dbt/profiles.yml
-/dbt/dwhvault/dbt_packages/automate-dv/*
+/dbt/dwhvault/dbt_packages/automate-dv
+/dbt-site-packages
 profiles.yml
 .user.yml
 config.yaml
