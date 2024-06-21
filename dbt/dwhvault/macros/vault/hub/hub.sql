@@ -70,11 +70,11 @@ records_to_insert AS (
 )
 {%- if automate_dv.is_any_incremental() %}
 , records_to_delete AS (
-    SELECT {{ automate_dv.prefix(cols_without_ldts_to, 'a', alias_target='target') }}, now()::date, False as is_active
+    SELECT {{ automate_dv.prefix(cols_without_ldts_to, 'd', alias_target='target') }}, now()::date, False as is_active
     FROM {{ ns.last_cte }} AS a
     RIGHT JOIN {{ this }} AS d
     ON {{ automate_dv.multikey(src_pk, prefix=['a','d'], condition='=') }}
-    WHERE {{ automate_dv.multikey(src_pk, prefix='d', condition='IS NULL') }}
+    WHERE {{ automate_dv.multikey(src_pk, prefix='a', condition='IS NULL') }}
 )
 {%- endif %}
 
