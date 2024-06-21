@@ -22,6 +22,9 @@
   {% if strategy == 'merge' %}
     {% do return(postgres_merge_sql(target_relation, tmp_relation, unique_key, dest_columns)) %}
   {% elif strategy == 'hub' %}
+    {% if unique_key == '' %}
+      {% do exceptions.raise_compiler_error("With incremental_strategy=\'hub\' unique_key must be specified") %}
+    {% endif %}
     {% do return(postgres_hub_merge_sql(target_relation, tmp_relation, unique_key, dest_columns)) %}
   {% else %}
     {% do exceptions.raise_compiler_error('invalid strategy: ' ~ strategy) %}
@@ -30,7 +33,7 @@
 
 {% materialization incremental, adapter='postgres' -%}
 
-  {%- set unique_key = config.get('unique_key') -%}
+  {%- set unique_key = config.get('unique_key', '') -%}
   {%- set full_refresh_mode = (should_full_refresh()) -%}
 
   {% set target_relation = this %}

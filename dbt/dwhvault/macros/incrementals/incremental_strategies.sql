@@ -1,20 +1,14 @@
 {% macro postgres_hub_merge_sql(target, source, unique_key, dest_columns) -%}
 
     {%- set dest_cols_csv = get_quoted_csv(dest_columns | map(attribute="name")) -%}
-
-    {% if unique_key is not none %}
-    delete from {{ target }}
-    where ({{ unique_key }}) in (
-        select ({{ unique_key }})
-        from {{ source }}
-    );
-    {% endif %}
-
-    '12332'insert into {{ target }} ({{ dest_cols_csv }})
-    (
-        select {{ dest_cols_csv }}
-        from {{ source }}
-    )
+    merge into {{ target }} as t
+    using {{ source }} as s
+    on s.unique_key = t.unique_key
+    WHEN MATCHED THEN
+    UPDATE SET date_to = s.date_to, is_active = s.is_active
+    WHEN NOT MATCHED THEN
+        INSERT ({{ dest_cols_csv }})
+        VALUES {{ automate_dv.prefix(dest_columns, 'rr') }};
 
 {%- endmacro %}
 
