@@ -5,6 +5,7 @@
 
 {{
     config(
+		schema='stage_raw',
         materialized='table'
     )	
 }}
