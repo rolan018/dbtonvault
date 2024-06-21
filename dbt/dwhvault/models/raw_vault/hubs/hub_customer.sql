@@ -2,7 +2,8 @@
     config(
         schema="raw_vault",
         materialized="incremental",
-        incremental_strategy='hub'
+        incremental_strategy='hub',
+        unique_key='usernumber_pk'
     )
 }}
 
