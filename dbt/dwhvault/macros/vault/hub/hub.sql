@@ -12,7 +12,7 @@
 
 {%- set cols_without_ldts_to = automate_dv.expand_column_list(columns=[src_pk, src_nk, src_ldts_from, src_source]) -%}
 
-{{ 'WITH ' -}}
+{{- 'WITH ' -}}
 
 {%- if not (source_model is iterable and source_model is not string) -%}
     {%- set source_model = [source_model] -%}
@@ -35,7 +35,7 @@ row_rank_{{ source_number }} AS (
     {%- set ns.last_cte = "row_rank_{}".format(source_number) %}
 ),{{ "\n" if not loop.last }}
 {% endfor -%}
-{% if source_model | length > 1 %}
+{%- if source_model | length > 1 -%}
 stage_union AS (
     {%- for src in source_model %}
     SELECT * FROM row_rank_{{ loop.index | string }}
@@ -46,7 +46,7 @@ stage_union AS (
     {%- set ns.last_cte = "stage_union" %}
 ),
 {%- endif -%}
-{%- if source_model | length > 1 %}
+{%- if source_model | length > 1 -%}
 
 row_rank_union AS (
 {#- PostgreSQL has DISTINCT ON which should be more performant than the
@@ -58,13 +58,22 @@ row_rank_union AS (
     ORDER BY {{ automate_dv.prefix([src_pk], 'ru') }}, {{ automate_dv.prefix([src_ldts_from], 'ru') }}, {{ automate_dv.prefix([src_source], 'ru') }} ASC
     {%- set ns.last_cte = "row_rank_union" %}
 ),
-{% endif %}
+{%- endif -%}
+{%- if automate_dv.is_any_incremental() %}
 active_hub AS (
     SELECT * 
     FROM {{ this }}
     WHERE is_active=True
-)
-, records_to_insert AS (
+), 
+records_to_delete AS (
+    SELECT {{ automate_dv.prefix(cols_without_ldts_to, 'd', alias_target='target') }}, now()::date, False as is_active
+    FROM {{ ns.last_cte }} AS a
+    RIGHT JOIN active_hub AS d
+    ON {{ automate_dv.multikey(src_pk, prefix=['a','d'], condition='=') }}
+    WHERE {{ automate_dv.multikey(src_pk, prefix='a', condition='IS NULL') }}
+),
+{%- endif %}
+records_to_insert AS (
     SELECT {{ automate_dv.prefix(source_cols, 'a', alias_target='target') }}, True as is_active
     FROM {{ ns.last_cte }} AS a
     {%- if automate_dv.is_any_incremental() %}
@@ -73,16 +82,6 @@ active_hub AS (
     WHERE {{ automate_dv.multikey(src_pk, prefix='d', condition='IS NULL') }}
     {%- endif %}
 )
-{%- if automate_dv.is_any_incremental() %}
-, records_to_delete AS (
-    SELECT {{ automate_dv.prefix(cols_without_ldts_to, 'd', alias_target='target') }}, now()::date, False as is_active
-    FROM {{ ns.last_cte }} AS a
-    RIGHT JOIN active_hub AS d
-    ON {{ automate_dv.multikey(src_pk, prefix=['a','d'], condition='=') }}
-    WHERE {{ automate_dv.multikey(src_pk, prefix='a', condition='IS NULL') }}
-)
-{%- endif %}
-
 SELECT * FROM records_to_insert
 {%- if automate_dv.is_any_incremental() %}
 UNION 
