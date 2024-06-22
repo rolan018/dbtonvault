@@ -59,11 +59,16 @@ row_rank_union AS (
     {%- set ns.last_cte = "row_rank_union" %}
 ),
 {% endif %}
-records_to_insert AS (
+active_hub AS (
+    SELECT * 
+    FROM {{ this }}
+    WHERE is_active=True
+)
+, records_to_insert AS (
     SELECT {{ automate_dv.prefix(source_cols, 'a', alias_target='target') }}, True as is_active
     FROM {{ ns.last_cte }} AS a
     {%- if automate_dv.is_any_incremental() %}
-    LEFT JOIN {{ this }} AS d
+    LEFT JOIN active_hub AS d
     ON {{ automate_dv.multikey(src_pk, prefix=['a','d'], condition='=') }}
     WHERE {{ automate_dv.multikey(src_pk, prefix='d', condition='IS NULL') }}
     {%- endif %}
@@ -72,7 +77,7 @@ records_to_insert AS (
 , records_to_delete AS (
     SELECT {{ automate_dv.prefix(cols_without_ldts_to, 'd', alias_target='target') }}, now()::date, False as is_active
     FROM {{ ns.last_cte }} AS a
-    RIGHT JOIN {{ this }} AS d
+    RIGHT JOIN active_hub AS d
     ON {{ automate_dv.multikey(src_pk, prefix=['a','d'], condition='=') }}
     WHERE {{ automate_dv.multikey(src_pk, prefix='a', condition='IS NULL') }}
 )
