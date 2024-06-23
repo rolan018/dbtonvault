@@ -1,4 +1,12 @@
 # DWH on DBT and Vault (with [Automate_dv](https://automate-dv.readthedocs.io/en/latest/))
+Automate_DV and dbt_utils packages are installed in
+```
+dbt/dwhvault/dbt_packages
+```
+Pay attention to the file
+```
+dbt/dwhvault/packages.yml
+```
 
 ## Start project
 ```
@@ -25,16 +33,18 @@ Run generator with N rows
 go run .\cmd\main.go --numRows="N"
 ```
 
-## Changed automate_dv files
-
 
 ## DBT
-Run dbt models with vars
 ```
-dbt run --vars '{"key": "value", "date": 20180101}'
-dbt run --vars '{key: value, date: 20180101}'
-dbt run --vars 'key: value'
+cd ./dbt/dwhvault
 ```
+In Docker container
+```
+docker exec -it <container_name> bash
+
+cd dwhvault 
+```
+
 
 # Finish work
 ```

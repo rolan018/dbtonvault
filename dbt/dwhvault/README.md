@@ -1,15 +1,22 @@
-Welcome to your new dbt project!
+Welcome to DWHVAULT!
 
-### Using the starter project
+## Work with load_date
+To work with the load_date, the "source_date" or others variables is described inside the model. 
+There are 2 ways to use this variable. 
+1 - Set the value of the variable in the dbt_project.yml file in the VARS section. 
+```
+dwhvault/dbt_project.yml
 
-Try running the following commands:
-- dbt run
-- dbt test
+# VARS
+vars:
+  source_date: '2024-10-01'
+```
 
+2 - Explicitly run the model specifying a variable.
+Run dbt models with vars
+```
+dbt run --vars '{"key": "value", "date": 20180101}'
+dbt run --vars '{key: value, date: 20180101}'
+dbt run --vars 'key: value'
+```
 
-### Resources:
-- Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
-- Check out [Discourse](https://discourse.getdbt.com/) for commonly asked questions and answers
-- Join the [chat](https://community.getdbt.com/) on Slack for live discussions and support
-- Find [dbt events](https://events.getdbt.com) near you
-- Check out [the blog](https://blog.getdbt.com/) for the latest news on dbt's development and best practices
