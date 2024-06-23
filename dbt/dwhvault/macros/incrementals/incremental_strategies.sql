@@ -6,7 +6,7 @@
     using {{ source }} as s
     on s.{{ unique_key }} = t.{{ unique_key }} 
     when matched then
-    update set date_to = s.date_to, is_active = s.is_active
+    update set date_to = s.date_to, is_active = s.is_active, date_from = s.date_from
     when not matched then
         insert ({{ dest_cols_csv }})
         values (s.{{ dest_columns|map(attribute="name")|join(', s.') }});
