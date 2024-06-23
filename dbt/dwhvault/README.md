@@ -19,4 +19,8 @@ dbt run --vars '{"key": "value", "date": 20180101}'
 dbt run --vars '{key: value, date: 20180101}'
 dbt run --vars 'key: value'
 ```
+Example
+```
+dbt run --vars 'source_date: '2024-11-01'' -m customer_stage
+```
 
