@@ -9,23 +9,26 @@
 
   {% set invalid_strategy_msg -%}
     Invalid incremental strategy provided: {{ strategy }}
-    Expected one of: 'merge', 'hub'
+    Expected one of: 'snapshot_sat', 'snapshot_hub'
   {%- endset %}
-  {% if strategy not in ['merge', 'hub'] %}
+  {% if strategy not in ['snapshot_sat', 'snapshot_hub'] %}
     {% do exceptions.raise_compiler_error(invalid_strategy_msg) %}
   {% endif %}
 
   {% do return(strategy) %}
 {% endmacro %}
 
-{% macro postgres_get_incremental_sql(strategy, tmp_relation, target_relation, unique_key, dest_columns) %}
-  {% if strategy == 'merge' %}
-    {% do return(postgres_merge_sql(target_relation, tmp_relation, unique_key, dest_columns)) %}
-  {% elif strategy == 'hub' %}
-    {% if unique_key == '' %}
-      {% do exceptions.raise_compiler_error("With incremental_strategy=\'hub\' unique_key must be specified") %}
+{% macro postgres_get_incremental_sql(strategy, tmp_relation, target_relation, unique_key, hash_diff, dest_columns) %}
+  {% if strategy == 'snapshot_sat' %}
+    {% if unique_key == '' or hash_diff == '' %}
+      {% do exceptions.raise_compiler_error("With incremental_strategy=\'snapshot_sat\' unique_key and hash_diff must be specified") %}
     {% endif %}
-    {% do return(postgres_hub_merge_sql(target_relation, tmp_relation, unique_key, dest_columns)) %}
+    {% do return(postgres_snapshot_sat_merge_sql(target_relation, tmp_relation, unique_key, hash_diff, dest_columns)) %}
+  {% elif strategy == 'snapshot_hub' %}
+    {% if unique_key == '' %}
+      {% do exceptions.raise_compiler_error("With incremental_strategy=\'snapshot_hub\' unique_key must be specified") %}
+    {% endif %}
+    {% do return(postgres_snapshot_hub_merge_sql(target_relation, tmp_relation, unique_key, dest_columns)) %}
   {% else %}
     {% do exceptions.raise_compiler_error('invalid strategy: ' ~ strategy) %}
   {% endif %}
@@ -34,6 +37,8 @@
 {% materialization incremental, adapter='postgres' -%}
 
   {%- set unique_key = config.get('unique_key', '') -%}
+  {%- set hash_diff = config.get('hash_diff', '') -%}
+
   {%- set full_refresh_mode = (should_full_refresh()) -%}
 
   {% set target_relation = this %}
@@ -68,7 +73,7 @@
     {% if not dest_columns %}
       {% set dest_columns = adapter.get_columns_in_relation(existing_relation) %}
     {% endif %}
-    {% set build_sql = postgres_get_incremental_sql(strategy, tmp_relation, target_relation, unique_key, dest_columns) %}
+    {% set build_sql = postgres_get_incremental_sql(strategy, tmp_relation, target_relation, unique_key, hash_diff, dest_columns) %}
   
   {% endif %}
 
