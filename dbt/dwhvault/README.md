@@ -1,6 +1,16 @@
 Welcome to DWHVAULT!
 
-##
+
+## Load strategies
+Be careful, the model is based on ***INCREMENTAL*** loading of objects(hubs, sats, links). 
+
+The `macros/incrementals/incremental_strategies` file defines incremental loading strategies for all objects(hubs, sats, links).
+
+The incremental strategies are called `snapshot_<object>` because the source transmits the source data for the models in a ***COMPLETE SLICE***, which are in the scheme `stage`.
+
+Source is a `data-generator` (go-service) whose data model is located here `data-generator/models`
+
+## Custom Macroses
 The `macros` folder contains custom macroses. 
 
 `macros/vault` contain scripts for the formation of the main data vault objects. 
