@@ -15,6 +15,14 @@ docker-compose --env-file .all-env  up -d
 ```
 dbt init dwhvault
 ```
+
+Add connection parameters to the database in `profiles.yml` file
+
+Add packages to `dbt_packages`: automate-dv and dbt_utils
+
+Pay attention to the file `packages.yml` ([Packages file](https://docs.getdbt.com/docs/build/packages#how-do-i-add-a-package-to-my-project)) where you need to specify the location of the installed packages
+
+And **Finaly Command** to install:
 ```
 dbt deps 
 ```
