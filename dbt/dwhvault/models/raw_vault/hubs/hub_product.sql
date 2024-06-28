@@ -2,7 +2,7 @@
     config(
         schema="raw_vault",
         materialized="incremental",
-        incremental_strategy='hub',
+        incremental_strategy='snapshot_hub',
         unique_key='productnumber_pk'
     )
 }}
