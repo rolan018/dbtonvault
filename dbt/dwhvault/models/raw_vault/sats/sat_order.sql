@@ -3,16 +3,16 @@
         schema='raw_vault',
         materialized='incremental',
         incremental_strategy='snapshot_sat',
-        unique_key='usernumber_pk',
-        hash_diff='user_hashdiff'
+        unique_key='ordernumber_pk',
+        hash_diff='order_hashdiff'
     )
 }}
 
 
 {%- set source_model = "customer_stage_vault" -%}
-{%- set src_pk = "usernumber_pk" -%}
-{%- set src_hashdiff = "user_hashdiff" -%}
-{%- set src_payload = ["user_name", "user_email", "user_phone_number", "date_login"] -%}
+{%- set src_pk = "ordernumber_pk" -%}
+{%- set src_hashdiff = "order_hashdiff" -%}
+{%- set src_payload = ["order_description", "date_order"] -%}
 {%- set src_eff = "date_from" -%}
 {%- set src_ldts = "date_to" -%}
 {%- set src_source = "source_sys" -%}
