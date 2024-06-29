@@ -40,7 +40,7 @@ records_to_reupdate AS (
             AND {{ automate_dv.prefix([src_hashdiff], 'lr', alias_target='target') }} <> {{ automate_dv.prefix([src_hashdiff], 'sd') }}
 ),
 records_to_delete AS (
-    SELECT {{ automate_dv.alias_all(source_cols_without_ldts, 'sd') }}, now()::date, 'D' as operation_vault, False as is_active
+    SELECT {{ automate_dv.alias_all(source_cols_without_ldts, 'lr') }}, now()::date, 'D' as operation_vault, False as is_active
         FROM source_data AS sd
         RIGHT JOIN latest_records AS lr
             ON {{ automate_dv.multikey(src_pk, prefix=['lr','sd'], condition='=') }}
