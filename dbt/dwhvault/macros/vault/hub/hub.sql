@@ -45,9 +45,6 @@ stage_union AS (
     {%- endfor %}
     {%- set ns.last_cte = "stage_union" %}
 ),
-{%- endif -%}
-{%- if source_model | length > 1 -%}
-
 row_rank_union AS (
 {#- PostgreSQL has DISTINCT ON which should be more performant than the
     strategy used by Snowflake ROW_NUMBER() OVER( PARTITION BY ...
