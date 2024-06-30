@@ -9,9 +9,9 @@
 
   {% set invalid_strategy_msg -%}
     Invalid incremental strategy provided: {{ strategy }}
-    Expected one of: 'snapshot_sat', 'snapshot_hub'
+    Expected one of: 'snapshot_sat', 'snapshot_hub', 'snapshot_link'
   {%- endset %}
-  {% if strategy not in ['snapshot_sat', 'snapshot_hub'] %}
+  {% if strategy not in ['snapshot_sat', 'snapshot_hub', 'snapshot_link'] %}
     {% do exceptions.raise_compiler_error(invalid_strategy_msg) %}
   {% endif %}
 
@@ -29,6 +29,11 @@
       {% do exceptions.raise_compiler_error("With incremental_strategy=\'snapshot_hub\' unique_key must be specified") %}
     {% endif %}
     {% do return(postgres_snapshot_hub_merge_sql(target_relation, tmp_relation, unique_key, dest_columns)) %}
+  {% elif strategy == 'snapshot_link' %}
+    {% if unique_key == '' %}
+      {% do exceptions.raise_compiler_error("With incremental_strategy=\'snapshot_link\' unique_key must be specified") %}
+    {% endif %}
+    {% do return(postgres_snapshot_link_merge_sql(target_relation, tmp_relation, unique_key, dest_columns)) %}
   {% else %}
     {% do exceptions.raise_compiler_error('invalid strategy: ' ~ strategy) %}
   {% endif %}
