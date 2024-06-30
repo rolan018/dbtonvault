@@ -8,9 +8,9 @@
 {%- set src_ldts_from = src_ldts -%}
 {%- set src_ldts_to = "date_to" -%}
 
-{%- set source_cols = automate_dv.expand_column_list(columns=[src_pk, src_nk, src_ldts_from, src_source, src_ldts_to]) -%}
+{%- set source_cols = automate_dv.expand_column_list(columns=[src_pk, src_nk, src_extra_columns, src_source, src_ldts_from, src_ldts_to]) -%}
 
-{%- set cols_without_ldts_to = automate_dv.expand_column_list(columns=[src_pk, src_nk, src_ldts_from, src_source]) -%}
+{%- set cols_without_ldts_to = automate_dv.expand_column_list(columns=[src_pk, src_nk, src_extra_columns, src_source, src_ldts_from]) -%}
 
 {{- 'WITH ' -}}
 
