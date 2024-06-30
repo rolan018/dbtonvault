@@ -10,7 +10,7 @@
 source_model: 'order_stage'
 derived_columns:
   DATE_FROM: DATE_LOAD
-  DATE_TO: '!2100-01-01'
+  DATE_TO: "TO_DATE('2100-01-01', 'YYYY-MM-DD')"
   SOURCE_SYS: '!AMO'
 hashed_columns:
   ORDERNUMBER_PK:
